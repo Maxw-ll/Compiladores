@@ -4,7 +4,7 @@ Este projeto implementa um **Autômato Finito Determinístico (AFD)** para recon
 
 ## Objetivo
 
-Uma das classes de tokens presentes em linguagens de programação são as constantes numéricas reais. Este projeto visa implementar um AFD que reconheça tais constantes.
+Uma das classes de tokens presentes em linguagens de programação são as constantes numéricas reais. Este projeto visa implementar um AFD que reconheça tais constantes
 
 ## Especificações
 
