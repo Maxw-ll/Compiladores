@@ -4,14 +4,11 @@
 #include <ctype.h>
 #include "Analisador.h"
 
-#define TRUE 1
-#define FALSE 0
-
 #define TAM_OPER 3
-char *operators = {'+', '-', '*'};
+char *operators = "+-*";
 
 #define TAM_PAREN 2
-char *parenteses = {'(',')'};
+char *parenteses = "()";
 
 
 
@@ -41,6 +38,15 @@ int isparentheses(char c)
     return FALSE;
 }
 
+int isatribb(char c)
+{
+    if(c == ':')
+    {
+        return TRUE;
+    }
+    return FALSE;
+}
+
 Lexer *create_lexer(char *text)
 {
     Lexer *l = (Lexer *)malloc(sizeof(Lexer));
@@ -65,7 +71,8 @@ void info_lexer(Lexer *l)
         printf("TEXTO: %s\n", l->text);
         printf("PONTEIRO: %d\n", l->pointer);
         printf("CURRENT_CHAR: %c\n", l->current_char);
-        printf("TAMANHO: %d", l->tam);
+        printf("TAMANHO: %d\n", l->tam);
+        printf("----------------------------------\n");
     }
 
     else
@@ -82,23 +89,37 @@ void advance(Lexer *l)
 
 void skip_whhitespace(Lexer *l)
 {
-    while (l->current_char == " " && l->pointer < l->tam)
+    while (l->current_char == ' ' && l->pointer < l->tam)
     {
         advance(l);
     }
 }
 
+void info_token(Token *t)
+{   
+    if( t != NULL )
+    {
+        printf("----- INFO TOKEN -----\n");
+        printf("Token Type: %s\n", t->type);
+        printf("Token Value: %s\n", t->value);
+        printf("----------------------\n");
+    }
+
+}
+
 Token *number(Lexer *l)
 {
     Token *t = (Token *)malloc(sizeof(Token));
-    char *result = "";
+    char *result = (char*)malloc(sizeof(char)*TEXT_TAM);
     int indx = 0;
-    while (isdigit(l->current_char))
+    while (isdigit(l->current_char) && l->pointer < l->tam)
     {
         result[indx] = l->current_char;
         advance(l);
         indx++;
     }
+    result[indx] = '\0';
+
     t->type = "NUMBER";
     t->value = result;
 
@@ -108,47 +129,86 @@ Token *number(Lexer *l)
 Token *identificador(Lexer *l)
 {   
     Token *t = (Token*)malloc(sizeof(Token));
-    char* result = "";
+    char *result = (char*)malloc(sizeof(char)*TEXT_TAM);
     int indx = 0;
-    while(isalpha(l->current_char))
+    while(isalpha(l->current_char) && l->pointer < l->tam)
     {   
         result[indx] =  l->current_char;
         advance(l);
         indx++;
     }
+    result[indx] = '\0';
 
     t->type = "IND";
     t->value = result;
+    
 
     return t;
 }
 
 Token* operator(Lexer *l)
-{
+{   
+    char *result = (char*)malloc(sizeof(char)*TEXT_TAM);
     Token *t = (Token*)malloc(sizeof(Token));
-    t->type = "OPERATOR";
-    t->value = l->current_char;
+
+    result[0] = l->current_char;
+    result[1] = '\0';
+
+    t->type = "OPER";
+    t->value = result;
+    advance(l);
     return t;
 
 }
 
 Token *parentese(Lexer *l)
-{
+{   
+    char *result = (char*)malloc(sizeof(char)*TEXT_TAM);
     Token *t = (Token*)malloc(sizeof(Token));
-    t->type = "PARENTESES";
-    t->value = l->current_char;
+
+    result[0] = l->current_char;
+    result[1] = '\0';
+
+    t->type = "PAREN";
+    t->value = result;
+    advance(l);
     return t;
 
 }
 
-Token *get_next_token(Lexer *l)
-{   
-    while(l->current_char != '\0')
+Token *atribuicao(Lexer *l)
+{
+    char *result = (char*)malloc(sizeof(char)*TEXT_TAM);
+    Token *t = (Token*)malloc(sizeof(Token));
+    result[0] = l->current_char;
+
+    advance(l);
+
+    if(l->current_char == '=')
     {
-        if(l->current_char == " ")
+        result[1] = l->current_char;
+        result[2] = '\0';
+
+        t->type = "ATRIB";
+        t->value = result;
+        advance(l);
+        return t;
+    }
+
+    printf("Erro Lexico: Caractere Inesperado -> %c Apos :\n", l->current_char);
+   
+   
+    return NULL;
+
+}
+
+Token* get_next_token(Lexer *l)
+{   
+    if(l->current_char != '\0')
+    {
+        if(l->current_char == ' ')
         {
             skip_whhitespace(l);
-            continue;
         }
         if(isdigit(l->current_char))
         {
@@ -166,7 +226,18 @@ Token *get_next_token(Lexer *l)
         {
             return parentese(l);
         }
+        if(isatribb(l->current_char))
+        {
+            return atribuicao(l);
+        }
+        else
+        {
+            printf("Erro Lexico: Caractere Inesperado -> %c\n", l->current_char);
+            advance(l);
+        }
 
     }
+
+    return NULL;
 }
 

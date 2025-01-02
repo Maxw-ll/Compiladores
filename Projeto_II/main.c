@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define TEXT_TAM 50
+
 
 int main()
 {   
@@ -10,9 +10,14 @@ int main()
     printf("Digite algo: ");
     char* text = (char*)malloc(sizeof(char*)*TEXT_TAM);
     fgets(text, TEXT_TAM, stdin);
-    printf("%s", text);
     Lexer* l = create_lexer(text);
-
-    info_lexer(l);
+    int i= 0;
+    Token *t = (Token*)malloc(sizeof(Token));
+    
+    while(l->pointer < l->tam)
+    {
+        t = get_next_token(l);
+        info_token(t);
+    }
 
 }
