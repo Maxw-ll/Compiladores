@@ -234,10 +234,14 @@ Token* get_next_token(Lexer *l)
         {
             printf("Erro Lexico: Caractere Inesperado -> %c\n", l->current_char);
             advance(l);
+            return NULL;
         }
 
     }
 
-    return NULL;
+    Token *t = (Token*)malloc(sizeof(Token));
+    t->type = "EOF";
+    t->value = "";
+    return t;
 }
 

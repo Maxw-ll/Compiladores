@@ -18,7 +18,10 @@ void consume(Sintaxer *s, Token *t)
 {
     if (strcmp(s->current_token->type, t->type) == 0)
     {
+        printf("Token Consumido!\n");
+        info_token(t);
         s->current_token = get_next_token(s->l);
+       
     }
     else
     {
@@ -27,7 +30,9 @@ void consume(Sintaxer *s, Token *t)
 }
 
 TreeNode *fator(Sintaxer *s)
-{
+{   
+    
+
     Token *t = s->current_token;
 
     TreeNode *current_node = (TreeNode *)malloc(sizeof(TreeNode));
@@ -65,8 +70,10 @@ TreeNode *fator(Sintaxer *s)
 }
 
 TreeNode *term(Sintaxer *s)
-{
-    TreeNode *current_node = (TreeNode *)malloc(sizeof(TreeNode));
+{   
+    
+
+    TreeNode *current_node;
     current_node = fator(s);
     while (strcmp(s->current_token->type, "OPER") == 0 && strcmp(s->current_token->value, "*") == 0)
     {
@@ -84,9 +91,15 @@ TreeNode *term(Sintaxer *s)
 }
 
 TreeNode *expression(Sintaxer *s)
-{
+{   
+    if(strcmp(s->current_token->type, "EOF") == 0)
+    return NULL;
+    
+
     TreeNode *current_node;
     current_node = term(s);
+
+
     while (strcmp(s->current_token->type, "OPER") == 0 && (strcmp(s->current_token->value, "+") == 0  || strcmp(s->current_token->value, "-") == 0))
     {
         Token *t = s->current_token;
@@ -95,6 +108,7 @@ TreeNode *expression(Sintaxer *s)
         newnode->type = "BIN";
         newnode->value = t->value;
         newnode->left = current_node;
+        info_node(newnode);
         newnode->right = term(s);
         current_node = newnode;
     }
@@ -111,6 +125,21 @@ void spaces(int space)
         }
 }
 
+void info_node(TreeNode *node)
+{   
+    if(node != NULL)
+    {   
+        printf("----------- INFO NODE ---------\n");
+        printf("Node Type: %s\n", node->type);
+        printf("Node Value: %s\n", node->value);
+        printf("-------------------------------\n");
+    }
+    else
+    {
+        printf("Node NULL");
+    }
+
+}
 void show_tree(TreeNode *node, int space)
 { 
     

@@ -58,6 +58,7 @@ typedef struct treenode
 void spaces(int space);
 void consume(Sintaxer *s, Token *t);
 void show_tree(TreeNode *node, int space);
+void info_node(TreeNode *t);
 
 Sintaxer *create_sintaxer(Lexer *l);
 TreeNode *expression(Sintaxer *s);
