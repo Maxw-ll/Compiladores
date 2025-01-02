@@ -158,6 +158,7 @@ void show_tree(TreeNode *node, int space)
         spaces(space);
         printf("Filho Esquerdo: \n");
         show_tree(node->left, space+1);
+        spaces(space);
         printf("Filho Direito: \n");
         show_tree(node->right, space+1);
     } 
