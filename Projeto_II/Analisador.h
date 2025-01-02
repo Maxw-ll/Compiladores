@@ -41,12 +41,26 @@ void skip_whhitespace(Lexer *l);
 
 //Analisador Sintático
 
+typedef struct sintaxer
+{   
+    Lexer *l;
+    Token *current_token;
+} Sintaxer;
 
+typedef struct treenode
+{
+    char* type;
+    char* value;
+    struct treenode *left;
+    struct treenode *right;
+} TreeNode;
 
+void spaces(int space);
+void consume(Sintaxer *s, Token *t);
+void show_tree(TreeNode *node, int space);
 
-
-
-
-
-
+Sintaxer *create_sintaxer(Lexer *l);
+TreeNode *expression(Sintaxer *s);
+TreeNode *term(Sintaxer *s);
+TreeNode *fator(Sintaxer *s);
 #endif

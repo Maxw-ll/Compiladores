@@ -12,12 +12,10 @@ int main()
     fgets(text, TEXT_TAM, stdin);
     Lexer* l = create_lexer(text);
     int i= 0;
-    Token *t = (Token*)malloc(sizeof(Token));
-    
-    while(l->pointer < l->tam)
-    {
-        t = get_next_token(l);
-        info_token(t);
-    }
+  
+    Sintaxer *s = create_sintaxer(l);
+    TreeNode *t = expression(s);
+
+    show_tree(t, 0);
 
 }
