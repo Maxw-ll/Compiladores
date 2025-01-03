@@ -45,6 +45,7 @@ typedef struct sintaxer
 {   
     Lexer *l;
     Token *current_token;
+    Token *last_token;
 } Sintaxer;
 
 typedef struct treenode
@@ -61,6 +62,9 @@ void show_tree(TreeNode *node, int space);
 void info_node(TreeNode *t);
 
 Sintaxer *create_sintaxer(Lexer *l);
+
+
+TreeNode* error(Sintaxer *s, Token *t);
 TreeNode *expression(Sintaxer *s);
 TreeNode *term(Sintaxer *s);
 TreeNode *fator(Sintaxer *s);
