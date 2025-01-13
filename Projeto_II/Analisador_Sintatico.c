@@ -25,26 +25,41 @@ void consume(Sintaxer *s, Token *t)
         s->current_token = get_next_token(s->l);
        
     }
-    else
+    // else
+    // {
+    //     error(s, t);
+    //     while (strcmp(s->current_token->type, "EOF") != 0 && strcmp(s->current_token->type, t->type) != 0) //&& strcmp(s->current_token->type, "OPER") != 0 && strcmp(s->current_token->type, "PAREN") != 0) 
+    //     {
+    //         s->current_token = get_next_token(s->l);
+    //     }
+    // }
+}
+
+
+TreeNode* erro_fator(Sintaxer *s, Token *t)
+{
+    error(s, t);
+    while (strcmp(s->current_token->type, "EOF") != 0 && strcmp(s->current_token->type, "IND") != 0 && strcmp(s->current_token->type, "NUMBER") != 0 && strcmp(s->current_token->value, "(") != 0)
     {
-        error(s, t);
-        while (strcmp(s->current_token->type, "EOF") != 0 && strcmp(s->current_token->type, t->type) != 0 && strcmp(s->current_token->type, "OPER") != 0 && strcmp(s->current_token->type, "PAREN") != 0) 
-        {
-            s->current_token = get_next_token(s->l);
-        }
+        s->current_token = get_next_token(s->l);
     }
+    if(strcmp(s->current_token->type, "IND") == 0 || strcmp(s->current_token->type, "NUMBER") == 0 || strcmp(s->current_token->value, "(") == 0)
+    {
+        return fator(s);
+    }
+    return NULL;
 }
 
 
 TreeNode* error(Sintaxer *s, Token *t)
 {   
-    if (strcmp(s->current_token->type, "EOF") == 0)
-    {
+    // if (strcmp(s->current_token->type, "EOF") == 0)
+    // {
 
-    }
-    else if(strcmp(t->value, ")") == 0)
+    // }
+    if(strcmp(t->value, ")") == 0)
     {
-        printf("Token Inesperado! Erro Sintatico. Esperado ) \n", s->last_token->value);
+        printf("Token Inesperado! Erro Sintatico. Esperado ) \n", s->current_token->value);
     }
     else if(s->last_token == NULL)
     {
@@ -52,15 +67,15 @@ TreeNode* error(Sintaxer *s, Token *t)
     } 
     else if (strcmp(s->last_token->type, "IND") == 0)
     { 
-       printf("Token Inesperado! Erro em: '%s'. Esperado um OPERADOR: +, - ou * \n", s->last_token->value);
+       printf("Token Inesperado! Erro em: '%s'. Esperado um OPERADOR: +, - ou * \n", s->current_token->value);
     }
     else if((strcmp(s->last_token->type, "NUMBER") == 0))
     {
-        printf("Token Inesperado! Erro em: '%s'. Esperado um OPERADOR: +, - ou * \n", s->last_token->value);
+        printf("Token Inesperado! Erro em: '%s'. Esperado um OPERADOR: +, - ou * \n", s->current_token->value);
     }
     else if(strcmp(s->last_token->type, "OPER") == 0)
     {
-        printf("Token Inesperado! Erro em: %s. Esperado IND, NUMBER ou (\n", s->last_token->value);
+        printf("Token Inesperado! Erro em: %s. Esperado IND, NUMBER ou (\n", s->current_token->value);
     }
 
     //s->last_token = s->current_token;
@@ -102,12 +117,15 @@ TreeNode *fator(Sintaxer *s)
         para_fecha->value = ")";
         consume(s, t);
         current_node = expression(s);
-        consume(s,para_fecha);
+        if (strcmp(s->current_token->value, ")") != 0)
+        {
+            error(s, para_fecha);
+        }
         
     }
     else
     {
-       consume(s,t);
+       return erro_fator(s,t);
     }
 
     return current_node;
@@ -150,7 +168,7 @@ TreeNode *expression(Sintaxer *s)
     TreeNode *current_node;
     current_node = term(s);
 
-    if(strcmp(s->current_token->type, "EOF") != 0 && strcmp(s->current_token->type, "OPER") != 0)
+    if(strcmp(s->current_token->type, "EOF") != 0 && strcmp(s->current_token->type, "OPER") != 0 && strcmp(s->current_token->value, ")") != 0)
     {   
         Token *tz = (Token*)malloc(sizeof(Token));
         tz->type = "OPER";
