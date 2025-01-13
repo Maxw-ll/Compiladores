@@ -14,7 +14,7 @@ int main()
     int i= 0;
   
     Sintaxer *s = create_sintaxer(l);
-    TreeNode *t = expression(s);
+    TreeNode *t = analisador_sintatico(s);
 
     show_tree(t, 0);
 

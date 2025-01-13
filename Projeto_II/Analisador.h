@@ -68,4 +68,5 @@ TreeNode* error(Sintaxer *s, Token *t);
 TreeNode *expression(Sintaxer *s);
 TreeNode *term(Sintaxer *s);
 TreeNode *fator(Sintaxer *s);
+TreeNode* analisador_sintatico(Sintaxer *s);
 #endif
