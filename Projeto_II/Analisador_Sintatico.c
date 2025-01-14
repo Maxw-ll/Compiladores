@@ -20,7 +20,7 @@ void consume(Sintaxer *s, Token *t)
     if (strcmp(s->current_token->type, t->type) == 0)
     {
         printf("Token Consumido!\n");
-        info_token(t);
+        //info_token(t);
         s->last_token = s->current_token;
         s->current_token = get_next_token(s->l);
        
