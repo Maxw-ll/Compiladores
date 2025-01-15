@@ -4,6 +4,9 @@
 #include <string.h>
 
 
+int ocorreu_erro = FALSE;
+int can_open_paren = TRUE;
+
 
 Sintaxer* create_sintaxer(Lexer *l)
 {
@@ -15,19 +18,41 @@ Sintaxer* create_sintaxer(Lexer *l)
 
     return s;
 }
+
+void erro_oper(Sintaxer *s, Token*t)
+{
+    ocorreu_erro = TRUE;
+    error(s, t);
+   while (strcmp(s->current_token->type, "EOF") != 0 && strcmp(s->current_token->type, "OPER"))
+    {
+        s->current_token = get_next_token(s->l);
+    }
+    return;
+
+}
+
 void consume(Sintaxer *s, Token *t)
 {
     if (strcmp(s->current_token->type, t->type) == 0)
     {
-        printf("Token Consumido!\n");
+        //printf("Token Consumido!\n");
         //info_token(t);
         s->last_token = s->current_token;
         s->current_token = get_next_token(s->l);
        
     }
     else
-    {
-        error(s,t);
+    {   
+        ocorreu_erro = TRUE;
+        if(strcmp(t->type, "OPER") == 0)
+        {
+            erro_oper(s, t);
+        }
+        else
+        {
+            error(s,t);
+        }
+        
     }
     // else
     // {
@@ -39,9 +64,9 @@ void consume(Sintaxer *s, Token *t)
     // }
 }
 
-
 TreeNode* erro_fator(Sintaxer *s, Token *t)
-{
+{   
+    ocorreu_erro = TRUE;
     error(s, t);
     while (strcmp(s->current_token->type, "EOF") != 0 && strcmp(s->current_token->type, "IND") != 0 && strcmp(s->current_token->type, "NUMBER") != 0 && strcmp(s->current_token->value, "(") != 0)
     {
@@ -64,6 +89,10 @@ TreeNode* error(Sintaxer *s, Token *t)
     if(strcmp(t->value, ")") == 0)
     {
         printf("Token Inesperado! Erro Sintatico. Esperado ) \n", s->current_token->value);
+    }
+    else if(strcmp(s->current_token->value, "(") == 0)
+    {
+       printf("Token Inesperado! Erro em: '%s'. Esperado um OPERADOR: +, - ou * \n", s->current_token->value);
     }
     else if(s->last_token == NULL)
     {
@@ -89,6 +118,7 @@ TreeNode* error(Sintaxer *s, Token *t)
 
  
 }
+
 
 TreeNode *fator(Sintaxer *s)
 {   
@@ -119,9 +149,11 @@ TreeNode *fator(Sintaxer *s)
         Token *para_fecha = (Token*)malloc(sizeof(Token));
         para_fecha->type = "PAREN";
         para_fecha->value = ")";
+        can_open_paren = FALSE;
         consume(s, t);
         current_node = expression(s);
         consume(s, para_fecha);
+        can_open_paren = TRUE;
         
     }
     else
@@ -145,6 +177,9 @@ TreeNode *term(Sintaxer *s)
         tz->value = "";
         consume(s, tz);
     }
+
+
+
 
 
     while (strcmp(s->current_token->type, "OPER") == 0 && strcmp(s->current_token->value, "*") == 0)
@@ -176,6 +211,7 @@ TreeNode *expression(Sintaxer *s)
         tz->value = "";
         consume(s, tz);
     }
+
 
 
     while (strcmp(s->current_token->type, "OPER") == 0 && (strcmp(s->current_token->value, "+") == 0  || strcmp(s->current_token->value, "-") == 0))
@@ -251,7 +287,7 @@ void show_tree(TreeNode *node, int space)
 
 
 
-TreeNode* analisador_sintatico(Sintaxer *s)
+void analisador_sintatico(Sintaxer *s)
 {
     //s->current_token = get_next_token(s->l);
     int i = 0;
@@ -259,15 +295,15 @@ TreeNode* analisador_sintatico(Sintaxer *s)
     {
         if(strcmp(s->current_token->type, "NUMBER") == 0)
         {
-            return expression(s);
+             expression(s);
         }
         else if(strcmp(s->current_token->type, "IND") == 0)
         {
-            return expression(s);
+             expression(s);
         }
         else if(strcmp(s->current_token->value, "(") == 0)
         {
-            return expression(s);
+             expression(s);
         }
         else
         {
@@ -277,11 +313,18 @@ TreeNode* analisador_sintatico(Sintaxer *s)
             }
             s->last_token = s->current_token;
             s->current_token = get_next_token(s->l);
+            ocorreu_erro = TRUE;
         }
 
         i++;
 
 
+
+    }
+
+    if(ocorreu_erro == FALSE)
+    {
+        printf("Expresssao Sintaticamente Correta!");
     }
 
 }

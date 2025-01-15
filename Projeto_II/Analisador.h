@@ -60,6 +60,7 @@ void spaces(int space);
 void consume(Sintaxer *s, Token *t);
 void show_tree(TreeNode *node, int space);
 void info_node(TreeNode *t);
+void analisador_sintatico(Sintaxer *s);
 
 Sintaxer *create_sintaxer(Lexer *l);
 
@@ -68,5 +69,4 @@ TreeNode* error(Sintaxer *s, Token *t);
 TreeNode *expression(Sintaxer *s);
 TreeNode *term(Sintaxer *s);
 TreeNode *fator(Sintaxer *s);
-TreeNode* analisador_sintatico(Sintaxer *s);
 #endif
