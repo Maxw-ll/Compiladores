@@ -151,7 +151,27 @@ TreeNode *fator(Sintaxer *s)
         para_fecha->value = ")";
         can_open_paren = FALSE;
         consume(s, t);
-        current_node = expression(s);
+        //current_node = expression(s);
+        if(strcmp(s->current_token->type, "NUMBER") == 0)
+        {
+             expression(s);
+        }
+        else if(strcmp(s->current_token->type, "IND") == 0)
+        {
+             expression(s);
+        }
+        else if(strcmp(s->current_token->value, "(") == 0)
+        {
+             expression(s);
+        }
+        else
+        {
+            printf("Token Inesperado! Erro em: %s. Esperado IND, NUMBER ou (\n", s->current_token->value);
+            s->last_token = s->current_token;
+            s->current_token = get_next_token(s->l);
+            ocorreu_erro = TRUE;
+        }
+
         consume(s, para_fecha);
         can_open_paren = TRUE;
         
