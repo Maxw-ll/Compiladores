@@ -223,6 +223,7 @@ TreeNode *expression(Sintaxer *s)
         newnode->value = t->value;
         newnode->left = current_node;
         //info_node(newnode);
+        //printf("Entrou");
         newnode->right = term(s);
         current_node = newnode;
     }
